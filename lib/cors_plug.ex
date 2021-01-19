@@ -1,6 +1,8 @@
 defmodule CORSPlug do
   import Plug.Conn
 
+  require Logger
+
   def defaults do
     [
       origin: "*",
@@ -29,6 +31,8 @@ defmodule CORSPlug do
   @doc false
   def call(conn, options) do
     conn = merge_resp_headers(conn, headers(conn, options))
+
+    Logger.info("CORS Plug response headers: #{inspect(Map.get(conn, :resp_headers))}")
 
     case {options[:send_preflight_response?], conn.method} do
       {true, "OPTIONS"} -> conn |> send_resp(204, "") |> halt()
